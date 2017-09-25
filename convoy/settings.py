@@ -2753,7 +2753,7 @@ def task_settings(cloud_pool, config, poolconf, jobspec, conf, missing_images):
     else:
         # set normal run and exec commands
         docker_run_cmd = 'docker run'
-        docker_exec_cmd = 'docker exec'
+        docker_exec_cmd = 'docker exec -u hpcuser'
     # adjust for infiniband
     if infiniband:
         if not inter_node_comm:
@@ -2772,6 +2772,13 @@ def task_settings(cloud_pool, config, poolconf, jobspec, conf, missing_images):
         run_opts.append('--device=/dev/infiniband/rdma_cm')
         run_opts.append('--device=/dev/infiniband/uverbs0')
         run_opts.append('-v /opt/intel:/opt/intel:ro')
+
+        run_opts.append('-e ENV_CLUSTER_DISCOVERY=consul://104.45.19.147:8500')
+        run_opts.append('-e ENV_ROLE=slave')
+        run_opts.append('-e ENV_SSHD_PORT=22022')
+        run_opts.append('-e ENV_CUSTOMER_EMAIL=fatih.ertinaz@theubercloud.com')
+        run_opts.append('-e ENV_ORDER_NUMBER=azurebatch')
+        
         # only centos-hpc and sles-hpc:12-sp1 are supported
         # for infiniband
         if (publisher == 'openlogic' and offer == 'centos-hpc' or
