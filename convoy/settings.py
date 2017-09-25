@@ -2916,7 +2916,7 @@ def task_settings(cloud_pool, config, poolconf, jobspec, conf):
     else:
         # set normal run and exec commands
         docker_run_cmd = 'docker run'
-        docker_exec_cmd = 'docker exec'
+        docker_exec_cmd = 'docker exec -u hpcuser'
     # infiniband
     infiniband = (
         _kv_read(conf, 'infiniband') or _kv_read(jobspec, 'infiniband')
@@ -2941,6 +2941,13 @@ def task_settings(cloud_pool, config, poolconf, jobspec, conf):
                      pool_id, vm_size))
         # mount /opt/intel for all container types
         run_opts.append('{} /opt/intel:/opt/intel:ro'.format(bindparm))
+
+        run_opts.append('-e ENV_CLUSTER_DISCOVERY=consul://104.45.19.147:8500')
+        run_opts.append('-e ENV_ROLE=slave')
+        run_opts.append('-e ENV_SSHD_PORT=22022')
+        run_opts.append('-e ENV_CUSTOMER_EMAIL=fatih.ertinaz@theubercloud.com')
+        run_opts.append('-e ENV_ORDER_NUMBER=azurebatch')
+
         if not native:
             if util.is_not_empty(docker_image):
                 # common run opts
